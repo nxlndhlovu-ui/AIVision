@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Learning — AIVision</title>
+    <!-- <link rel="stylesheet" href="src/frontend/css"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<nav class="navbar">
+    <div class="logo">AIVision</div>
+    <ul class="nav-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/ml">ML</a></li>
+        <li><a href="/deep-learning" class="active">Deep Learning</a></li>
+        <li><a href="/analytics">Analytics</a></li>
+    </ul>
+</nav>
+
+<main class="container">
+    <section class="page-header">
+        <h1>Deep Learning</h1>
+        <p>Train the deep-learning model using your dataset.</p>
+    </section>
+
+    <section class="card">
+        <h2>Train Model</h2>
+
+        <button class="btn btn-primary" onclick="trainModel()">
+            Start Training
+        </button>
+
+        <div id="result">
+            <div class="output">
+                Model is ready to train.
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    async function trainModel() {
+        const result = document.getElementById("result");
+
+        result.innerHTML =
+            "<div class='output'>Training model...</div>";
+
+        try {
+            const response = await fetch("/api/deep-learning/train", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({})
+            });
+
+            const data = await response.json();
+
+            result.innerHTML =
+                "<div class='output'><pre>" +
+                JSON.stringify(data, null, 2) +
+                "</pre></div>";
+        } catch (error) {
+            result.innerHTML =
+                "<div class='output'><span class='err'>" +
+                error.message +
+                "</span></div>";
+        }
+    }
+</script>
+

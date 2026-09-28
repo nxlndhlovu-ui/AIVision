@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage — AIVision</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<nav class="navbar">
+    <div class="logo">AIVision</div>
+    <ul class="nav-menu">
+        <li><a href="/" class="active">Home</a></li>
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/ml">ML</a></li>
+        <li><a href="/deep-learning">Deep Learning</a></li>
+        <li><a href="/analytics">Analytics</a></li>
+    </ul>
+</nav>
+
+<main class="container">
+    <section class="page-header">
+        <h1>AIVision</h1>
+        <p>Artificial Intelligence and Machine Learning Platform</p>
+    </section>
+
+    <section class="card">
+        <h2>Welcome</h2>
+        <p>
+            Generate datasets, explore statistics, train machine-learning
+            models, detect anomalies, perform clustering, and experiment
+            with deep learning.
+        </p>
+
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="generateData()">
+                Generate Dataset
+            </button>
+            <a class="btn" href="/dashboard">Open Dashboard</a>
+            <a class="btn" href="/ml">Machine Learning</a>
+            <a class="btn" href="/deep-learning">Deep Learning</a>
+            <a class="btn" href="/analytics">Analytics</a>
+        </div>
+
+        <div id="result"></div>
+    </section>
+</main>
+
+<script>
+    async function generateData() {
+        const result = document.getElementById("result");
+        result.innerHTML = "<div class='output'>Generating data...</div>";
+
+        try {
+            const response = await fetch("/api/data/generate", {
+                method: "POST"
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                result.innerHTML =
+                    "<div class='output'>Dataset generated successfully.</div>";
+            } else {
+                result.innerHTML =
+                    "<div class='output'><span class='err'>" +
+                    (data.error || "Failed to generate data.") +
+                    "</span></div>";
+            }
+        } catch (error) {
+            result.innerHTML =
+                "<div class='output'><span class='err'>" +
+                error.message +
+                "</span></div>";
+        }
+    }
+</script>

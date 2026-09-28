@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — AIVision</title>
+    <!-- <link rel="stylesheet" href="src/frontend/css"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<nav class="navbar">
+    <div class="logo">AIVision</div>
+    <ul class="nav-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/dashboard" class="active">Dashboard</a></li>
+        <li><a href="/ml">ML</a></li>
+        <li><a href="/deep-learning">Deep Learning</a></li>
+        <li><a href="/analytics">Analytics</a></li>
+    </ul>
+</nav>
+
+<main class="container">
+    <section class="page-header">
+        <h1>Dashboard</h1>
+        <p>Overview of your AIVision dataset.</p>
+    </section>
+
+    <section class="card">
+        <h2>Dataset</h2>
+
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="generateData()">
+                Generate Dataset
+            </button>
+
+            <button class="btn" onclick="loadSamples()">
+                Load Samples
+            </button>
+
+            <button class="btn" onclick="loadStatistics()">
+                Statistics
+            </button>
+        </div>
+
+        <div id="result"></div>
+    </section>
+</main>
+
+<script>
+    const result = document.getElementById("result");
+
+    async function generateData() {
+        result.innerHTML = "<div class='output'>Generating dataset...</div>";
+
+        try {
+            const response = await fetch("/api/data/generate", {
+                method: "POST"
+            });
+
+            const data = await response.json();
+
+            result.innerHTML =
+                "<div class='output'>" +
+                (data.success
+                    ? "Dataset generated successfully."
+                    : data.error || "Generation failed.") +
+                "</div>";
+        } catch (error) {
+            showError(error);
+        }
+    }
+
+    async function loadSamples() {
+        result.innerHTML = "<div class='output'>Loading samples...</div>";
+
+        try {
+            const response = await fetch("/api/data/samples");
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.error || "Unable to load samples.");
+            }
+
+            result.innerHTML =
+                "<div class='output'><pre>" +
+                JSON.stringify(data, null, 2) +
+                "</pre></div>";
+        } catch (error) {
+            showError(error);
+        }
+    }
+
+    async function loadStatistics() {
+        result.innerHTML = "<div class='output'>Calculating statistics...</div>";
+
+        try {
+            const response = await fetch("/api/math/statistics");
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.error || "Unable to calculate statistics.");
+            }
+
+            result.innerHTML =
+                "<div class='output'><pre>" +
+                JSON.stringify(data.statistics, null, 2) +
+                "</pre></div>";
+        } catch (error) {
+            showError(error);
+        }
+    }
+
+    function showError(error) {
+        result.innerHTML =
+            "<div class='output'><span class='err'>" +
+            error.message +
+            "</span></div>";
+    }
+</script>
